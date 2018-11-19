@@ -29,7 +29,7 @@ During a disaster  a huge amount of messages are generated on social media and o
 ## File Descriptions 
 
  
-
+<pre>
 - app # a Flask enabled web app showcasing results
   | - template
   | |- master.html  # main page of web app
@@ -44,6 +44,7 @@ During a disaster  a huge amount of messages are generated on social media and o
   |- train_classifier.py
   |- classifier.pkl  # saved model 
 - README.md
+</pre>
 
 ## Results
 
