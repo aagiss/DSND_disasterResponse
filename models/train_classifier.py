@@ -16,6 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import make_scorer
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -35,6 +36,15 @@ def tokenize(text):
             for w in word_tokenize(text)
             if w not in stopwords.words("english")]
 
+def my_scorer(y_test, y_pred):
+    TP = np.logical_and(y_test == y_pred, y_pred != 0).sum()
+    FP = np.logical_and(y_test != y_pred, y_pred != 0).sum()
+    FN = np.logical_and(y_test != y_pred, y_test != 0).sum()
+    precision = float(TP)/float(TP+FP) if TP+FP > 0 else 0
+    recall = float(TP)/float(TP+FN) if TP+FN > 0 else 0
+    b = 0.5
+    return (b+1)*precision*recall/(b*precision+recall)
+
 def build_model():
     """
     Create pipeline and gridsearch
@@ -45,14 +55,12 @@ def build_model():
         ('clf', MultiOutputClassifier(SGDClassifier(tol=1e-3, max_iter=1000)))
     ])
     params = {
-        'clf__estimator__alpha': [0.00001, 0.00002, 0.00005, 0.0001,
-                                  0.0002, 0.0005, 0.0008, 0.001],
-        'clf__estimator__penalty': ['none', 'l2'],
-        'clf__estimator__average': [True, False],
-        'clf__estimator__loss': ['hinge', 'squared_hinge', 'log', 'modified_huber'],
+        'clf__estimator__alpha': [0.00005, 0.0001, 0.0002],
+        'clf__estimator__penalty': ['l2'],
+        'clf__estimator__loss': ['hinge', 'log', 'modified_huber'],
         'clf__estimator__class_weight': [None, 'balanced']
     }
-    cv = GridSearchCV(pipeline, param_grid=params)
+    cv = GridSearchCV(pipeline, param_grid=params, scoring=make_scorer(my_scorer), cv=3)
     return cv
 
 def get_train_test(input_db, input_table):
