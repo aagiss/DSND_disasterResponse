@@ -37,6 +37,9 @@ def tokenize(text):
             if w not in stopwords.words("english")]
 
 def my_scorer(y_test, y_pred):
+    """
+    scorer for GridSearch, actually implementing f0.5_micro
+    """
     TP = np.logical_and(y_test == y_pred, y_pred != 0).sum()
     FP = np.logical_and(y_test != y_pred, y_pred != 0).sum()
     FN = np.logical_and(y_test != y_pred, y_test != 0).sum()

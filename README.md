@@ -70,7 +70,7 @@ def my_scorer(y_test, y_pred):
     FN = np.logical_and(y_test != y_pred, y_test != 0).sum()
     precision = float(TP)/float(TP+FP) if TP+FP > 0 else 0
     recall = float(TP)/float(TP+FN) if TP+FN > 0 else 0
-    b = 0.5
+    b = 0.1
     return (b+1)*precision*recall/(b*precision+recall)
 </pre>
 
